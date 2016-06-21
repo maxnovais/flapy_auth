@@ -10,7 +10,7 @@ class User(Model):
     username =db.Column(db.String(30), unique=True)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
-    active = db.Column(db.Boolean(default=True))
+    active = db.Column(db.Boolean(), default=True)
     created_at = db.Column(db.DateTime, index=True, default=datetime.now())
     last_login_at = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())

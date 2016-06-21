@@ -1,6 +1,7 @@
 #coding: utf-8
 import os
+from auth.config.base import BaseConfig
 
 
-class BaseConfig(object):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+class Config(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
