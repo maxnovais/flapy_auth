@@ -5,7 +5,7 @@ from auth.models import Model, db
 
 class User(Model):
     id = db.Column(db.Integer, primary_key=True)
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     username =db.Column(db.String(30), unique=True)
     email = db.Column(db.String(255), unique=True)

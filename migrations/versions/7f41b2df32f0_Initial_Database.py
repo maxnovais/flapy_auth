@@ -24,7 +24,8 @@ def upgrade():
     sa.UniqueConstraint('name')
     )
     op.create_index(op.f('ix_role_created_at'), 'role', ['created_at'], unique=False)
-    op.create_table('users',
+
+    op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=30), nullable=True),
     sa.Column('email', sa.String(length=255), nullable=True),
@@ -38,14 +39,15 @@ def upgrade():
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
     )
-    op.create_index(op.f('ix_users_created_at'), 'users', ['created_at'], unique=False)
+    op.create_index(op.f('ix_user_created_at'), 'user', ['created_at'], unique=False)
+
     op.create_table('user_role',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id', 'role_id', name='un_user_role')
     )
@@ -55,7 +57,9 @@ def upgrade():
 def downgrade():
     op.drop_index(op.f('ix_user_role_created_at'), table_name='user_role')
     op.drop_table('user_role')
-    op.drop_index(op.f('ix_users_created_at'), table_name='users')
-    op.drop_table('users')
+
+    op.drop_index(op.f('ix_user_created_at'), table_name='user')
+    op.drop_table('user')
+
     op.drop_index(op.f('ix_role_created_at'), table_name='role')
     op.drop_table('role')
