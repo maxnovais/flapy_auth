@@ -8,4 +8,4 @@ class BaseModel(db.Model):
     created_at = db.Column(db.DateTime, index=True, default=datetime.now())
 
 
-from auth.models.user import User
+from auth.models.user import User, Roles
