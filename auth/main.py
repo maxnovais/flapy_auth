@@ -1,6 +1,11 @@
 # coding: utf-8
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+
+
+db = SQLAlchemy(session_options={'expire_on_commit': False, 'autoflush': False})
+lm = LoginManager()
 
 
 def create_app(env):
@@ -8,8 +13,7 @@ def create_app(env):
     app = Flask(__name__)
     app.config.from_object(config_object)
     app.debug = app.config['DEBUG']
-
-    lm = LoginManager()
+    db.init_app()
     lm.init_app(app)
-
     return app
+
