@@ -29,6 +29,10 @@ class UserNotFound(BaseException):
     pass
 
 
+class UserAlreadyExist(BaseException):
+    pass
+
+
 class ValidationError(BaseException):
     pass
 
