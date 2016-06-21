@@ -1,0 +1,8 @@
+#coding: utf-8
+import os
+from auth.config.base import BaseConfig
+
+
+class Config(BaseConfig):
+    # Database
+    SQLALCHEMY_DATABASE_URI = 'postgresql://root:auth@localhost:5432/flapy_auth'

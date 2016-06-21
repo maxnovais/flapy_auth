@@ -1,22 +1,20 @@
 # coding: utf-8
-from auth.main import db
-from auth.models import BaseModel
+from datetime import datetime
+from auth.models import Model, db
 
 
-roles_users = db.Table(
-    'roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+class User(Model):
+    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'users'
 
-
-class User(BaseModel):
     username =db.Column(db.String(30), unique=True)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    created_at = db.Column(db.DateTime, index=True, default=datetime.now())
     last_login_at = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())
     login_count = db.Column(db.Integer())
-    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -27,16 +25,31 @@ class User(BaseModel):
 
     @property
     def is_active(self):
-        return True
+        return self.active
 
     @property
     def is_anonymous(self):
         return False
 
 
-class Roles(BaseModel):
+class Role(Model):
+    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'role'
+
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, index=True, default=datetime.now())
 
     def __repr__(self):
         return '<Roles {}>'.format(self.name)
+
+
+class UserRole(Model):
+    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'user_role'
+
+    created_at = db.Column(db.DateTime, index=True, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    role_id = db.Column(db.Integer, db.ForeignKey(Role.id))
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'role_id', name='un_user_role'),)

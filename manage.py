@@ -1,10 +1,14 @@
 # coding: utf-8
-import os
 from flask_script import Manager
-from auth.main import create_app
+from flask_migrate import Migrate, MigrateCommand
+from auth.main import create_app, db
 
-env = os.environ.get('AUTH_ENV') or 'local'
-manager = Manager(create_app(env))
+app = create_app()
+manager = Manager(app)
+migrate = Migrate(app=app, db=db)
+
+manager.add_command('db', MigrateCommand)
+
 
 if __name__ == '__main__':
     manager.run()

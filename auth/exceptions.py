@@ -5,11 +5,19 @@ class BaseException(Exception):
     message = ''
 
 
-class InvalidUsername(BaseException):
+class InvalidCredentials(BaseException):
     pass
 
 
-class InvalidPassword(BaseException):
+class InvalidUsername(InvalidCredentials):
+    pass
+
+
+class InvalidPassword(InvalidCredentials):
+    pass
+
+
+class InvalidEmail(InvalidCredentials):
     pass
 
 
@@ -18,4 +26,12 @@ class PasswordMismatch(BaseException):
 
 
 class UserNotFound(BaseException):
+    pass
+
+
+class ValidationError(BaseException):
+    pass
+
+
+class SessionNotFound(BaseException):
     pass
