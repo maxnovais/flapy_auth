@@ -21,6 +21,18 @@ class User(BaseModel):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
 
 class Roles(BaseModel):
     name = db.Column(db.String(80), unique=True)
