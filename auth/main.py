@@ -9,7 +9,7 @@ lm = LoginManager()
 
 
 def create_app(env):
-    config_object = 'elflapy.config.{}.Config'.format(env)
+    config_object = 'auth.config.{}.Config'.format(env)
     app = Flask(__name__)
     app.config.from_object(config_object)
     app.debug = app.config['DEBUG']
