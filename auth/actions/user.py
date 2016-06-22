@@ -63,6 +63,14 @@ class UserAction(object):
         user.password = self.generate_password(new_password)
         user.save(commit=True)
 
+    def change_status(self, login):
+        user = self.get_user(login)
+        if user.active:
+            user.active = False
+        else:
+            user.active = True
+        user.save(commit=True)
+
     def reset_password(self, email):
         pass
 

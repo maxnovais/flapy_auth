@@ -55,7 +55,7 @@ def test_get_user_with_username(user):
 def test_get_user_with_email(user):
     user_action = UserAction()
     user = user_action.get_user('mayforce@bewith.you')
-    assert user.username == 'Darth_Vader'
+    assert str(user) == '<User Darth_Vader>'
 
 
 def test_get_inexistent_user():
@@ -68,5 +68,13 @@ def test_return_true_in_validate_password(user):
     user_action = UserAction()
     valid = user_action.validate_password('Darth_Vader', '12345678')
     assert valid is True
+
+
+def test_invalidate_and_validate_user(user):
+    user_action = UserAction()
+    user_action.change_status(user.username)
+    assert user.active is False
+    user_action.change_status(user.email)
+    assert user.active is True
 
 
