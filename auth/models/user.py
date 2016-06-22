@@ -16,9 +16,6 @@ class User(Model):
     current_login_at = db.Column(db.DateTime())
     login_count = db.Column(db.Integer())
 
-    def __repr__(self):
-        return '<User {}>'.format(self.username)
-
     @property
     def is_authenticated(self):
         return True
@@ -30,26 +27,3 @@ class User(Model):
     @property
     def is_anonymous(self):
         return False
-
-
-class Role(Model):
-    id = db.Column(db.Integer, primary_key=True)
-    __tablename__ = 'role'
-
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, index=True, default=datetime.now())
-
-    def __repr__(self):
-        return '<Roles {}>'.format(self.name)
-
-
-class UserRole(Model):
-    id = db.Column(db.Integer, primary_key=True)
-    __tablename__ = 'user_role'
-
-    created_at = db.Column(db.DateTime, index=True, default=datetime.now())
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    role_id = db.Column(db.Integer, db.ForeignKey(Role.id))
-
-    __table_args__ = (db.UniqueConstraint('user_id', 'role_id', name='un_user_role'),)

@@ -55,7 +55,7 @@ def test_get_user_with_username(user):
 def test_get_user_with_email(user):
     user_action = UserAction()
     user = user_action.get_user('mayforce@bewith.you')
-    assert str(user) == '<User Darth_Vader>'
+    assert str(user) == '<User[1] username=\'Darth_Vader\'>'
 
 
 def test_get_inexistent_user():

@@ -105,3 +105,4 @@ def user():
                        email='mayforce@bewith.you',
                        password='12345678',
                        confirm_password='12345678')
+
