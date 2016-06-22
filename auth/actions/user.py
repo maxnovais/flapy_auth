@@ -6,16 +6,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 from auth.exceptions import (InvalidPassword, InvalidUsername, InvalidEmail, PasswordMismatch, UserAlreadyExist,
                              UserNotFound)
-from auth.main import db
 from auth.models import User
 
 
 class UserAction(object):
     def create(self, username, email, password=None, confirm_password=None):
         """ Create a new user """
-        if len(username) < 5:
-            raise InvalidUsername
-
         if not self.verify_username(username):
             raise InvalidUsername
 
@@ -33,8 +29,8 @@ class UserAction(object):
             user.username = username
             user.email = email
             user.password = self.generate_password(password)
-            db.session.add(user)
-            db.session.commit()
+            user.save(commit=True)
+            return user
         except IntegrityError:
             raise UserAlreadyExist
 
@@ -65,8 +61,7 @@ class UserAction(object):
 
         user = self.get_user(login)
         user.password = self.generate_password(new_password)
-        db.session.add(user)
-        db.session.commit()
+        user.save(commit=True)
 
     def reset_password(self, email):
         pass
