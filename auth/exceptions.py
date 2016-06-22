@@ -39,3 +39,11 @@ class ValidationError(BaseException):
 
 class SessionNotFound(BaseException):
     pass
+
+
+class RoleAlreadyExist(BaseException):
+    pass
+
+
+class RoleNotFound(BaseException):
+    pass
