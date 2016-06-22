@@ -32,6 +32,12 @@ class UserNotFound(BaseException):
 class UserAlreadyExist(BaseException):
     pass
 
+class UserNotHasRole(BaseException):
+    pass
+
+
+class UserAlreadyInRole(BaseException):
+    pass
 
 class ValidationError(BaseException):
     pass
@@ -42,6 +48,10 @@ class SessionNotFound(BaseException):
 
 
 class RoleAlreadyExist(BaseException):
+    pass
+
+
+class RoleAlreadyEmpty(BaseException):
     pass
 
 

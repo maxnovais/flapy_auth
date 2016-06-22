@@ -59,3 +59,9 @@ def test_search_role_with_part_of_name(role):
 def test_search_role_do_not_return_a_role():
     with pytest.raises(RoleNotFound):
         RoleAction().search_role(name='Inexist role', exactly=True)
+
+
+def test_delete_role_with_success(role):
+    role_action = RoleAction()
+    role_action.delete(role.id)
+    assert Role.query.all() == []

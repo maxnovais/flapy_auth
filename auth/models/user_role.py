@@ -9,6 +9,8 @@ class UserRole(Model):
 
     created_at = db.Column(db.DateTime, index=True, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = db.relationship("User", backref="user_roles")
     role_id = db.Column(db.Integer, db.ForeignKey(Role.id))
+    role = db.relationship("Role")
 
     __table_args__ = (db.UniqueConstraint('user_id', 'role_id', name='un_user_role'),)

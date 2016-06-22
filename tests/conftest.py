@@ -117,3 +117,13 @@ def role():
     role.description = 'Administrator'
     role.save(commit=True)
     return role
+
+
+@pytest.fixture
+def user_role(user, role):
+    from auth.models import UserRole
+    user_role = UserRole()
+    user_role.user = user
+    user_role.role = role
+    user_role.save(commit=True)
+    return user_role
