@@ -73,8 +73,8 @@ def test_return_true_in_validate_password(user):
 def test_invalidate_and_validate_user(user):
     user_action = UserAction()
     user_action.change_status(user.username)
-    assert user.active is False
+    assert user.is_active is False
     user_action.change_status(user.email)
-    assert user.active is True
+    assert user.is_active is True
 
 
