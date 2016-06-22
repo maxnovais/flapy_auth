@@ -1,4 +1,5 @@
 # FLAPY_AUTH
+[![Build Status](https://travis-ci.org/maxnovais/flapy_auth.svg?branch=master)](https://travis-ci.org/maxnovais/flapy_auth)
 Simple auth with great idea
 ## Motivation
 In any project, we want to know who are our users and create for them a unique experience, one of the ability to promote that is signing them.
