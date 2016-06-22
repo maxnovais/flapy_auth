@@ -1,7 +1,7 @@
 # coding: utf-8
 from sqlalchemy.exc import IntegrityError
 from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound
-from auth.models import Role
+from auth.models import Role, db
 
 
 class RoleAction(object):
@@ -14,7 +14,8 @@ class RoleAction(object):
             role = Role()
             role.name = name
             role.description = description
-            role.save(commit=True)
+            role.save()
+            db.session.commit()
             return role
         except IntegrityError:
             raise RoleAlreadyExist
@@ -29,7 +30,8 @@ class RoleAction(object):
                 role.name = name
             if description:
                 role.description = description
-            role.save(commit=True)
+            role.save()
+            db.session.commit()
         except IntegrityError:
             raise RoleAlreadyExist
         return role
@@ -37,7 +39,8 @@ class RoleAction(object):
     @staticmethod
     def delete(role_id):
         role = Role.query.get(role_id)
-        role.delete(commit=True)
+        role.delete()
+        db.session.commit()
 
     @staticmethod
     def change_status(role_id):
@@ -46,7 +49,8 @@ class RoleAction(object):
             role.active = False
         else:
             role.active = True
-        role.save(commit=True)
+        role.save()
+        db.session.commit()
 
     @staticmethod
     def search_role(name, exactly=False):
