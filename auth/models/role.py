@@ -11,3 +11,7 @@ class Role(Model):
     description = db.Column(db.String(255))
     active = db.Column(db.Boolean(), default=True)
     created_at = db.Column(db.DateTime, index=True, default=datetime.now())
+
+    @property
+    def is_active(self):
+        return self.active

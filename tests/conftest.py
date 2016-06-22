@@ -99,10 +99,21 @@ def all(request, app, db_session):
 
 @pytest.fixture
 def user():
+    from auth.models import User
     from auth.actions import UserAction
-    user = UserAction()
-    return user.create(username='Darth_Vader',
-                       email='mayforce@bewith.you',
-                       password='12345678',
-                       confirm_password='12345678')
+    user = User()
+    user.username = 'Darth_Vader'
+    user.email = 'mayforce@bewith.you'
+    user.password = UserAction().generate_password(password='12345678')
+    user.save(commit=True)
+    return user
 
+
+@pytest.fixture
+def role():
+    from auth.models import Role
+    role = Role()
+    role.name = 'Admin'
+    role.description = 'Administrator'
+    role.save(commit=True)
+    return role

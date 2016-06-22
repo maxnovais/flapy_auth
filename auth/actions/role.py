@@ -1,12 +1,15 @@
 # coding: utf-8
 from sqlalchemy.exc import IntegrityError
-from auth.exceptions import RoleAlreadyExist, RoleNotFound
+from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound
 from auth.models import Role
 
 
 class RoleAction(object):
     @staticmethod
     def create(name, description=None):
+        if len(name) < 3:
+            raise InvalidRoleName
+
         try:
             role = Role()
             role.name = name
@@ -17,13 +20,18 @@ class RoleAction(object):
             raise RoleAlreadyExist
 
     @staticmethod
-    def edit(role_id, new_name, new_description):
-        role = Role.query.get(role_id)
-        if new_name:
-            role.name = new_name
-        if new_description:
-            role.description = new_description
-        role.save(commit=True)
+    def edit(role_id, name=None, description=None):
+        try:
+            role = Role.query.get(role_id)
+            if name:
+                if len(name) < 3:
+                    raise InvalidRoleName
+                role.name = name
+            if description:
+                role.description = description
+            role.save(commit=True)
+        except IntegrityError:
+            raise RoleAlreadyExist
         return role
 
     @staticmethod
@@ -41,7 +49,7 @@ class RoleAction(object):
         role.save(commit=True)
 
     @staticmethod
-    def search_role_by_exactly_name(name, exactly=False):
+    def search_role(name, exactly=False):
         role = Role()
         if exactly:
             role = role.query.filter(Role.name == name).first()

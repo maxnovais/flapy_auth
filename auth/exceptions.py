@@ -45,5 +45,9 @@ class RoleAlreadyExist(BaseException):
     pass
 
 
+class InvalidRoleName(BaseException):
+    pass
+
+
 class RoleNotFound(BaseException):
     pass
