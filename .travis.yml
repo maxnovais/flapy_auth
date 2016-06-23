@@ -5,5 +5,7 @@ python:
   - "3.5"
 install:
   - pip install -r requirements/test.txt
-script: make unit
-after_success: coveralls
+script:
+  - PYTHONPATH=. py.test tests --cov auth --cov-report term-missing
+after_success:
+  - coveralls
