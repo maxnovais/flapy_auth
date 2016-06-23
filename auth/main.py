@@ -3,8 +3,11 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from auth.blueprints import register_blueprints
+
 
 db = SQLAlchemy()
+
 
 def create_app():
     config_object = 'auth.config.{}.Config'.format(os.environ.get('AUTH_ENV') or 'local')
@@ -16,4 +19,6 @@ def create_app():
 
     lm = LoginManager()
     lm.init_app(app)
+
+    register_blueprints(app)
     return app

@@ -5,7 +5,7 @@ import string
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 from auth.exceptions import (InvalidPassword, InvalidUsername, InvalidEmail, PasswordMismatch, UserAlreadyExist,
-                             UserNotFound)
+                             UserNotFound, InvalidCredentials)
 from auth.models import User, db
 
 
@@ -49,6 +49,7 @@ class UserAction(object):
         user = self.get_user(login)
         if check_password_hash(user.password, password):
             return True
+        raise InvalidCredentials
 
     def change_password(self, login, old_password, new_password, confirm_new_password):
         if not self.validate_password(login, old_password):
@@ -95,3 +96,7 @@ class UserAction(object):
     def verify_username(username):
         if re.search(r'^[a-zA-Z0-9_.-]+$', username):
             return True
+
+    @staticmethod
+    def get_by_id(user_id):
+        return User.get(user_id)
