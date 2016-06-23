@@ -2,7 +2,7 @@
 import pytest
 from auth.actions import UserAction
 from auth.exceptions import (UserAlreadyExist, InvalidUsername, InvalidEmail, InvalidPassword, PasswordMismatch,
-                             UserNotFound)
+                             UserNotFound, InvalidCredentials)
 from auth.models import User
 
 
@@ -30,7 +30,7 @@ def test_create_user_raises_error(user, exception, username, email, password, co
 def test_change_user_password_with_success(user):
     user_action = UserAction()
     user_action.change_password(user.username, '12345678', '87654321', '87654321')
-    valid = user_action.validate_password(user.username, '87654321')
+    valid = user_action.validate_password(user.id, '87654321')
     assert valid is True
 
 
@@ -44,6 +44,12 @@ def test_change_password_errors(user, exception, password, new_password, confirm
     with pytest.raises(exception):
         user_action.change_password(login=user.username, old_password=password, new_password=new_password,
                                     confirm_new_password=confirm_new_password)
+
+
+def test_validate_user_raise_invalid_credentials(user):
+    user_action = UserAction()
+    with pytest.raises(InvalidCredentials):
+        user_action.validate_user('Darth_Vader', 'None')
 
 
 def test_get_user_with_username(user):
@@ -66,7 +72,7 @@ def test_get_inexistent_user():
 
 def test_return_true_in_validate_password(user):
     user_action = UserAction()
-    valid = user_action.validate_password('Darth_Vader', '12345678')
+    valid = user_action.validate_user('Darth_Vader', '12345678')
     assert valid is True
 
 

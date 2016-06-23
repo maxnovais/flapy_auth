@@ -45,14 +45,21 @@ class UserAction(object):
             raise UserNotFound
         return user
 
-    def validate_password(self, login, password):
-        user = self.get_user(login)
+    def validate_password(self, user_id, password):
+        user = User.query.get(user_id)
         if check_password_hash(user.password, password):
+            return True
+
+    def validate_user(self, login, password):
+        user = self.get_user(login)
+        if self.validate_password(user.id, password):
             return True
         raise InvalidCredentials
 
     def change_password(self, login, old_password, new_password, confirm_new_password):
-        if not self.validate_password(login, old_password):
+        user = self.get_user(login)
+
+        if not self.validate_password(user.id, old_password):
             raise InvalidPassword
 
         if len(new_password) < 8:
@@ -61,7 +68,6 @@ class UserAction(object):
         if new_password != confirm_new_password:
             raise PasswordMismatch
 
-        user = self.get_user(login)
         user.password = self.generate_password(new_password)
         user.save()
         db.session.commit()
