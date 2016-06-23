@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/maxnovais/flapy_auth.svg?branch=master)](https://travis-ci.org/maxnovais/flapy_auth) 
 [![Coverage Status](https://coveralls.io/repos/github/maxnovais/flapy_auth/badge.svg?branch=master)](https://coveralls.io/github/maxnovais/flapy_auth?branch=master)
 [![Requirements Status](https://requires.io/github/maxnovais/flapy_auth/requirements.svg?branch=master)](https://requires.io/github/maxnovais/flapy_auth/requirements/?branch=master)
+[![Code Health](https://landscape.io/github/maxnovais/flapy_auth/master/landscape.svg?style=flat)](https://landscape.io/github/maxnovais/flapy_auth/master)
 
 Simple auth with great idea
 
