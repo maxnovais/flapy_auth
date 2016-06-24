@@ -94,13 +94,13 @@ def login():
     password = request.json.get('password')
     remember = request.json.get('remember')
 
-    if username is None or password is None:
+    if not username or not password:
         return abort(400)
 
     try:
         user_action = UserAction()
-        user = user_action.get_user(username)
-        if user_action.validate_password(user.id, password):
+        user = user_action.validate_user(username, password)
+        if user:
             login_user(user, remember)
             return jsonify({'message': 'success'}), 200
 

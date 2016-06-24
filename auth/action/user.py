@@ -53,7 +53,7 @@ class UserAction(object):
     def validate_user(self, login, password):
         user = self.get_user(login)
         if self.validate_password(user.id, password):
-            return True
+            return user
         raise InvalidCredentials
 
     def change_password(self, login, old_password, new_password, confirm_new_password):

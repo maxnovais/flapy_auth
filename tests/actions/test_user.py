@@ -73,7 +73,7 @@ def test_get_inexistent_user():
 def test_return_true_in_validate_password(user):
     user_action = UserAction()
     valid = user_action.validate_user('Darth_Vader', '12345678')
-    assert valid is True
+    assert valid == user
 
 
 def test_invalidate_and_validate_user(user):

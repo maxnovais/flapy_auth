@@ -127,3 +127,9 @@ def user_role(user, role):
     user_role.role = role
     user_role.save(commit=True)
     return user_role
+
+
+@pytest.yield_fixture()
+def client(app):
+    with app.test_client() as _client:
+        yield _client
