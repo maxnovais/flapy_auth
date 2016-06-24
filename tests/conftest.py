@@ -120,7 +120,7 @@ def role():
 
 
 @pytest.fixture
-def user_role(user, role):
+def admin_role(user, role):
     from auth.models import UserRole
     user_role = UserRole()
     user_role.user = user
@@ -129,7 +129,27 @@ def user_role(user, role):
     return user_role
 
 
+@pytest.fixture
+def role_user():
+    from auth.models import Role
+    role = Role()
+    role.name = 'User'
+    role.description = 'Simple User'
+    role.save(commit=True)
+    return role
+
+@pytest.fixture
+def user_role(user, role_user):
+    from auth.models import UserRole
+    user_role = UserRole()
+    user_role.user = user
+    user_role.role = role_user
+    user_role.save(commit=True)
+    return user_role
+
+
 @pytest.yield_fixture()
 def client(app):
     with app.test_client() as _client:
         yield _client
+

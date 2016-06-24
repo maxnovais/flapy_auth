@@ -9,6 +9,18 @@ def header():
     return {'Content-Type': 'application/json; charset=UTF-8'}
 
 
+@pytest.fixture
+def login(user, header, client):
+    return client.post(url_for('core.login'),
+                           data=json.dumps({
+                               'username': 'Darth_Vader',
+                               'password': '12345678'
+                           }),
+                           headers=header)
+
+
+
+
 def test_access_home(client):
     response = client.get(url_for('core.index'))
     data = json.loads(response.data.decode('utf-8'))
@@ -43,3 +55,33 @@ def test_login_user_without_success(app, user, header, client, status_code, mess
     data = json.loads(response.data.decode('utf-8'))
     assert data['error_code'] == message
     assert response.status_code == status_code
+
+
+def test_access_a_blocked_page_with_login(login, user, client):
+    response = client.get(url_for('core.home'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['message'] == 'I\'m user as all!'
+    assert response.status_code == 200
+
+
+def test_access_a_blocked_page_without_login(user, client):
+    response = client.get(url_for('core.home'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['error_code'] == 'not_authorized'
+    assert response.status_code == 401
+
+
+def test_access_a_blocked_page_by_role_with_success(login, user, client, user_role):
+    response = client.get(url_for('core.user_view'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['error_code'] == 'forbidden'
+    assert response.status_code == 403
+
+
+def test_access_a_blocked_page_by_role_without_success(login, user, client):
+    response = client.get(url_for('core.user_view'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['error_code'] == 'forbidden'
+    assert response.status_code == 403
+
+

@@ -15,7 +15,7 @@ def error_handlers(app):
 
     @app.errorhandler(403)
     def not_authorized(error):
-        return make_response(jsonify({'error_code': 'forbidden'}), 401)
+        return make_response(jsonify({'error_code': 'forbidden'}), 403)
 
     @app.errorhandler(404)
     def not_found(error):
