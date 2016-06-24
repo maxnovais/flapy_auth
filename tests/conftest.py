@@ -100,7 +100,7 @@ def all(request, app, db_session):
 @pytest.fixture
 def user():
     from auth.models import User
-    from auth.actions import UserAction
+    from auth.action import UserAction
     user = User()
     user.username = 'Darth_Vader'
     user.email = 'mayforce@bewith.you'

@@ -1,11 +1,12 @@
 # coding: utf-8
-from flask import Blueprint, request, current_app, render_template
+from flask import Blueprint, request, current_app, render_template, abort
 from flask_login import login_required, login_user, logout_user, current_user
 from flask_swagger import swagger
 from flask.json import jsonify
 
-from auth.actions import UserAction
+from auth.action import UserAction
 from auth.exceptions import UserNotFound, InvalidCredentials
+from auth.views import login_permission
 
 blueprint = Blueprint('core', __name__, template_folder='templates', static_folder='static')
 
@@ -37,42 +38,146 @@ def swagger_ui():
 
 @blueprint.route('/', methods=['GET'])
 def index():
+    """Template index page"""
     return jsonify({'message': 'hello word!'})
 
 
 @blueprint.route('/login', methods=['POST'])
 def login():
+    """
+    Login
+    **Authenticate user using json params.**
+    ---
+    tags:
+      - Core
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: login_form
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            remember:
+              type: boolean
+    responses:
+      200:
+        description: Login with success
+        schema:
+          id: generic_success
+          properties:
+            message:
+              type: string
+      400:
+        description: Invalid json informations
+        schema:
+          id: generic_error
+          properties:
+            error_code:
+              type: string
+      401:
+        description: Invalid credentials
+        schema:
+          $ref: "#/definitions/generic_error"
+      404:
+        description: User not found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     username = request.json.get('username')
     password = request.json.get('password')
     remember = request.json.get('remember')
 
     if username is None or password is None:
-        return jsonify({'error_code': 'empty_credentials'}), 400
+        return abort(400)
 
     try:
         user_action = UserAction()
-        if user_action.validate_password(username, password):
-            login_user(username, remember=remember)
+        user = user_action.get_user(username)
+        if user_action.validate_password(user.id, password):
+            login_user(user, remember)
             return jsonify({'message': 'success'}), 200
 
     except UserNotFound:
-        return jsonify({'error_code': 'user_not_found'}), 404
+        return abort(404)
 
     except InvalidCredentials:
-        return jsonify({'error_code': 'invalid_credentials'}), 401
+        return abort(401)
 
 
 @blueprint.route('/home', methods=['GET'])
 @login_required
 def home():
-    user_action = UserAction()
-    user = user_action.get_by_id(current_user.get_id())
-    return jsonify(user)
+    """
+    Home
+    **Authenticated home for all**
+    ---
+    tags:
+      - Core
+    responses:
+      200:
+        description: Return user with success
+        schema:
+          $ref: "#/definitions/generic_success"
+      401:
+        description: Invalid credentials
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
+    return jsonify({'message': 'I\'m user as all!'}), 200
+
+
+@blueprint.route('/user', methods=['GET'])
+@login_required
+def user_view():
+    """
+    User_view
+    **Authenticated home for usergroup**
+    ---
+    tags:
+      - Core
+    responses:
+      200:
+        description: Return user with success
+        schema:
+          $ref: "#/definitions/generic_success"
+      401:
+        description: Invalid credentials
+        schema:
+          $ref: "#/definitions/generic_error"
+      403:
+        description: User not have permission
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
+    permissions = ['user']
+    if not login_permission(permissions):
+        return abort(403)
+
+    return jsonify({'message': 'I\'m user with success!'}), 200
 
 
 @login_required
 @blueprint.route('/logout', methods=['GET'])
 def logout():
+    """
+    Logout
+    **Logout user**
+    ---
+    tags:
+      - Core
+    responses:
+      200:
+        description: Logout with success
+        schema:
+          $ref: "#/definitions/generic_success"
+    """
     logout_user()
     return jsonify({'message': 'success'}), 200
 

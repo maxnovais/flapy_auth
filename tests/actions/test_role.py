@@ -1,6 +1,6 @@
 # coding: utf-8
 import pytest
-from auth.actions import RoleAction
+from auth.action import RoleAction
 from auth.exceptions import RoleNotFound, RoleAlreadyExist, InvalidRoleName
 from auth.models import Role
 

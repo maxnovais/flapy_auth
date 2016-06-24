@@ -1,6 +1,6 @@
 # coding: utf-8
 import pytest
-from auth.actions import UserRoleAction
+from auth.action import UserRoleAction
 from auth.exceptions import UserAlreadyInRole, RoleAlreadyEmpty, UserNotHasRole
 
 
@@ -25,7 +25,7 @@ def role_writer():
 @pytest.fixture
 def other_user():
     from auth.models import User
-    from auth.actions import UserAction
+    from auth.action import UserAction
     user = User()
     user.username = 'Luke_Skywalker'
     user.email = 'mayforce@bewith.me'

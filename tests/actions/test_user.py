@@ -1,6 +1,6 @@
 # coding: utf-8
 import pytest
-from auth.actions import UserAction
+from auth.action import UserAction
 from auth.exceptions import (UserAlreadyExist, InvalidUsername, InvalidEmail, InvalidPassword, PasswordMismatch,
                              UserNotFound, InvalidCredentials)
 from auth.models import User
@@ -79,8 +79,6 @@ def test_return_true_in_validate_password(user):
 def test_invalidate_and_validate_user(user):
     user_action = UserAction()
     user_action.change_status(user.username)
-    assert user.is_active is False
+    assert user.active is False
     user_action.change_status(user.email)
-    assert user.is_active is True
-
-
+    assert user.active is True
