@@ -101,6 +101,6 @@ class Model(db.Model, ModelMixin):
     query_class = Query
 
 
-from auth.models.user import User
-from auth.models.role import Role
-from auth.models.user_role import UserRole
+from auth.models.user import User #NSQA
+from auth.models.role import Role #NSQA
+from auth.models.user_role import UserRole #NSQA
