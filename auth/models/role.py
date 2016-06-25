@@ -1,7 +1,7 @@
 # coding: utf-8
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound
+from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound, RoleAlreadyEmpty
 from auth.models import Model, db
 
 
@@ -56,3 +56,15 @@ class Role(Model):
         if not role:
             raise RoleNotFound
         return role
+
+    @property
+    def users(self):
+        users = []
+        for role_user in self.role_users:
+            users.append(role_user.user)
+        return users
+
+    def remove_all_users(self):
+        for role_user in self.role_users:
+            role_user.delete(commit=True)
+        db.session.commit()

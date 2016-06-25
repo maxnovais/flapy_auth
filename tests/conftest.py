@@ -109,11 +109,32 @@ def user():
 
 
 @pytest.fixture
+def other_user():
+    from auth.models import User
+    user = User()
+    user.username = 'Luke_Skywalker'
+    user.email = 'mayforce@bewith.me'
+    user.password = user.generate_password(password='12345678')
+    user.save(commit=True)
+    return user
+
+
+@pytest.fixture
 def role():
     from auth.models import Role
     role = Role()
     role.name = 'Admin'
     role.description = 'Administrator'
+    role.save(commit=True)
+    return role
+
+
+@pytest.fixture
+def empty_role():
+    from auth.models import Role
+    role = Role()
+    role.name = 'None'
+    role.description = 'Master of None'
     role.save(commit=True)
     return role
 
@@ -137,12 +158,33 @@ def role_user():
     role.save(commit=True)
     return role
 
+
+@pytest.fixture
+def role_writer():
+    from auth.models import Role
+    role = Role()
+    role.name = 'Writer'
+    role.description = 'Writer'
+    role.save(commit=True)
+    return role
+
+
 @pytest.fixture
 def user_role(user, role_user):
     from auth.models import UserRole
     user_role = UserRole()
     user_role.user = user
     user_role.role = role_user
+    user_role.save(commit=True)
+    return user_role
+
+
+@pytest.fixture
+def other_user_in_role(other_user, role):
+    from auth.models import UserRole
+    user_role = UserRole()
+    user_role.user = other_user
+    user_role.role = role
     user_role.save(commit=True)
     return user_role
 

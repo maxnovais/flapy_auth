@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from auth.exceptions import (InvalidPassword, InvalidUsername, InvalidEmail, PasswordMismatch, UserAlreadyExist,
-                             UserNotFound, InvalidCredentials)
+                             UserNotFound, UserNotHasRole)
 from auth.models import Model, db
 
 
@@ -100,4 +100,21 @@ class User(Model, UserMixin):
             password = cls.random_password(12)
         return generate_password_hash(password)
 
+    @property
+    def roles(self):
+        roles = []
+        for user_role in self.user_roles:
+            roles.append(user_role.role)
+        return roles
 
+    def has_role(self, role):
+        if role in self.roles:
+            return True
+
+    def delete_all_roles(self):
+        if not self.user_roles:
+            raise UserNotHasRole
+
+        for user_role in self.user_roles:
+            user_role.delete(commit=True)
+        db.session.commit()
