@@ -2,6 +2,7 @@
 import os
 
 os.environ['AUTH_ENV'] = 'test'
+os.environ['SECRET_KEY'] = 'test'
 
 import pytest
 from flask.testing import FlaskClient
