@@ -12,13 +12,21 @@ def header():
 @pytest.fixture
 def login(user, header, client):
     return client.post(url_for('core.login'),
-                           data=json.dumps({
-                               'username': 'Darth_Vader',
-                               'password': '12345678'
-                           }),
-                           headers=header)
+                       data=json.dumps({'username': 'Darth_Vader', 'password': '12345678'}),
+                       headers=header)
 
 
+def test_generate_swagger_spec(client):
+    response = client.get(url_for('core.spec'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['info']['title'] == 'Flapy Auth-API'
+    assert response.status_code == 200
+
+
+def test_should_execute_swagger_ui_with_spec_url(client):
+    response = client.get(url_for('core.swagger_ui'))
+    assert '<title>Swagger UI</title>' in response.data.decode('utf8')
+    assert response.status_code == 200
 
 
 def test_access_home(client):
@@ -30,17 +38,14 @@ def test_access_home(client):
 
 def test_login_user_with_success(user, header, client):
     response = client.post(url_for('core.login'),
-                           data=json.dumps({
-                               'username': 'Darth_Vader',
-                               'password': '12345678'
-                           }),
+                           data=json.dumps({'username': 'Darth_Vader', 'password': '12345678'}),
                            headers=header)
     data = json.loads(response.data.decode('utf-8'))
     assert data['message'] == 'success'
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize('status_code, message, username, password',[
+@pytest.mark.parametrize('status_code, message, username, password', [
     (400, 'bad_request', '', ''),
     (401, 'not_authorized', 'Darth_Vader', '87654321'),
     (404, 'not_found', 'Luke_Skywalker', '12345678')
@@ -85,3 +90,9 @@ def test_access_a_blocked_page_by_role_without_success(login, user, client):
     assert response.status_code == 403
 
 
+def test_logout_is_a_success(login, user, client):
+    from flask_login import current_user
+    response = client.get(url_for('core.logout'))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['message'] == 'success'
+    assert current_user.is_authenticated is False
