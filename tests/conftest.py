@@ -2,6 +2,7 @@
 import os
 
 os.environ['AUTH_ENV'] = 'test'
+os.environ['SECRET_KEY'] = 'test'
 
 import pytest
 from flask.testing import FlaskClient
@@ -100,11 +101,21 @@ def all(request, app, db_session):
 @pytest.fixture
 def user():
     from auth.models import User
-    from auth.actions import UserAction
     user = User()
     user.username = 'Darth_Vader'
     user.email = 'mayforce@bewith.you'
-    user.password = UserAction().generate_password(password='12345678')
+    user.password = user.generate_password(password='12345678')
+    user.save(commit=True)
+    return user
+
+
+@pytest.fixture
+def other_user():
+    from auth.models import User
+    user = User()
+    user.username = 'Luke_Skywalker'
+    user.email = 'mayforce@bewith.me'
+    user.password = user.generate_password(password='12345678')
     user.save(commit=True)
     return user
 
@@ -113,17 +124,74 @@ def user():
 def role():
     from auth.models import Role
     role = Role()
-    role.name = 'Admin'
+    role.name = 'admin'
     role.description = 'Administrator'
     role.save(commit=True)
     return role
 
 
 @pytest.fixture
-def user_role(user, role):
+def empty_role():
+    from auth.models import Role
+    role = Role()
+    role.name = 'none'
+    role.description = 'Master of None'
+    role.save(commit=True)
+    return role
+
+
+@pytest.fixture
+def admin_role(user, role):
     from auth.models import UserRole
     user_role = UserRole()
     user_role.user = user
     user_role.role = role
     user_role.save(commit=True)
     return user_role
+
+
+@pytest.fixture
+def role_user():
+    from auth.models import Role
+    role = Role()
+    role.name = 'user'
+    role.description = 'Simple User'
+    role.save(commit=True)
+    return role
+
+
+@pytest.fixture
+def role_writer():
+    from auth.models import Role
+    role = Role()
+    role.name = 'writer'
+    role.description = 'Writer'
+    role.save(commit=True)
+    return role
+
+
+@pytest.fixture
+def user_role(user, role_user):
+    from auth.models import UserRole
+    user_role = UserRole()
+    user_role.user = user
+    user_role.role = role_user
+    user_role.save(commit=True)
+    return user_role
+
+
+@pytest.fixture
+def other_user_in_role(other_user, role):
+    from auth.models import UserRole
+    user_role = UserRole()
+    user_role.user = other_user
+    user_role.role = role
+    user_role.save(commit=True)
+    return user_role
+
+
+@pytest.yield_fixture()
+def client(app):
+    with app.test_client() as _client:
+        yield _client
+

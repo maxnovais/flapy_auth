@@ -77,6 +77,14 @@ class ModelMixin(object):
             return "<{name}[{id!r}]>".format(
                 name=self.__class__.__name__, id=self.id)
 
+    def toggle_status(self):
+        if self.active:
+            self.active = False
+        else:
+            self.active = True
+        self.save()
+        db.session.commit()
+
 
 class Query(BaseQuery):
     def fast_count(self):
