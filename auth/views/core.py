@@ -4,7 +4,6 @@ from flask_login import login_required, login_user, logout_user, current_user
 from flask_swagger import swagger
 from flask.json import jsonify
 
-from auth.action import UserAction
 from auth.exceptions import UserNotFound, InvalidCredentials
 from auth.views import login_permission
 

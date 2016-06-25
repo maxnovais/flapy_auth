@@ -100,11 +100,10 @@ def all(request, app, db_session):
 @pytest.fixture
 def user():
     from auth.models import User
-    from auth.action import UserAction
     user = User()
     user.username = 'Darth_Vader'
     user.email = 'mayforce@bewith.you'
-    user.password = UserAction().generate_password(password='12345678')
+    user.password = user.generate_password(password='12345678')
     user.save(commit=True)
     return user
 
