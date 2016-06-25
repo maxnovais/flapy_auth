@@ -74,8 +74,8 @@ def test_access_a_blocked_page_without_login(user, client):
 def test_access_a_blocked_page_by_role_with_success(login, user, client, user_role):
     response = client.get(url_for('core.user_view'))
     data = json.loads(response.data.decode('utf-8'))
-    assert data['error_code'] == 'forbidden'
-    assert response.status_code == 403
+    assert data['message'] == 'I\'m user with success!'
+    assert response.status_code == 200
 
 
 def test_access_a_blocked_page_by_role_without_success(login, user, client):

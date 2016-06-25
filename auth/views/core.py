@@ -1,11 +1,12 @@
 # coding: utf-8
 from flask import Blueprint, request, current_app, render_template, abort
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import login_required, login_user, logout_user
 from flask_swagger import swagger
 from flask.json import jsonify
 
 from auth.exceptions import UserNotFound, InvalidCredentials
 from auth.views import login_permission
+from auth.models import User
 
 blueprint = Blueprint('core', __name__, template_folder='templates', static_folder='static')
 
@@ -97,17 +98,15 @@ def login():
         return abort(400)
 
     try:
-        user_action = UserAction()
-        user = user_action.validate_user(username, password)
-        if user:
+        user = User.by_login(username)
+        if user.validate_password(password):
             login_user(user, remember)
             return jsonify({'message': 'success'}), 200
+        else:
+            return abort(401)
 
     except UserNotFound:
         return abort(404)
-
-    except InvalidCredentials:
-        return abort(401)
 
 
 @blueprint.route('/home', methods=['GET'])

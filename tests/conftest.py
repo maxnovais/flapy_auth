@@ -123,7 +123,7 @@ def other_user():
 def role():
     from auth.models import Role
     role = Role()
-    role.name = 'Admin'
+    role.name = 'admin'
     role.description = 'Administrator'
     role.save(commit=True)
     return role
@@ -133,7 +133,7 @@ def role():
 def empty_role():
     from auth.models import Role
     role = Role()
-    role.name = 'None'
+    role.name = 'none'
     role.description = 'Master of None'
     role.save(commit=True)
     return role
@@ -153,7 +153,7 @@ def admin_role(user, role):
 def role_user():
     from auth.models import Role
     role = Role()
-    role.name = 'User'
+    role.name = 'user'
     role.description = 'Simple User'
     role.save(commit=True)
     return role
@@ -163,7 +163,7 @@ def role_user():
 def role_writer():
     from auth.models import Role
     role = Role()
-    role.name = 'Writer'
+    role.name = 'writer'
     role.description = 'Writer'
     role.save(commit=True)
     return role

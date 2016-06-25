@@ -5,13 +5,13 @@ from auth.models import Role
 
 
 def test_create_role_with_success():
-    created_role = Role.create(name='Review', description='Reviewer')
+    created_role = Role.create(name='review', description='Reviewer')
     role = Role.query.filter(Role.name == created_role.name).one()
     assert role.description == created_role.description
 
 
 @pytest.mark.parametrize('exception, name', [
-    (RoleAlreadyExist, 'Admin'),
+    (RoleAlreadyExist, 'admin'),
     (InvalidRoleName, '')
 ])
 def test_should_not_create_role(role, exception, name):
@@ -20,16 +20,16 @@ def test_should_not_create_role(role, exception, name):
 
 
 def test_edit_role_with_sucess(role):
-    role.edit(name='User', description='Simple User')
-    assert role.name == 'User'
+    role.edit(name='user', description='Simple User')
+    assert role.name == 'user'
 
 
 @pytest.mark.parametrize('exception, name', [
-    (RoleAlreadyExist, 'Admin'),
-    (InvalidRoleName, 'Ad')
+    (RoleAlreadyExist, 'admin'),
+    (InvalidRoleName, 'ad')
 ])
 def test_should_not_edit_role(role, exception, name):
-    role = Role.create(name='User', description='Simple User')
+    role = Role.create(name='user', description='Simple User')
     with pytest.raises(exception):
         role.edit(name=name)
 
@@ -42,12 +42,12 @@ def test_invalidate_and_validate_role(role):
 
 
 def test_search_role_with_name(role):
-    role = Role.search_role(name='Admin', exactly=True)
+    role = Role.search_role(name='admin', exactly=True)
     assert role[0].description == 'Administrator'
 
 
 def test_search_role_with_part_of_name(role):
-    role_list = Role.search_role(name='Ad', exactly=False)
+    role_list = Role.search_role(name='ad', exactly=False)
     assert role in role_list
 
 

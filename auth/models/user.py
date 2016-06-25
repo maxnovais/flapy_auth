@@ -108,7 +108,7 @@ class User(Model, UserMixin):
         return roles
 
     def has_role(self, role):
-        if role in self.roles:
+        if role in self.roles or role == self.roles:
             return True
 
     def delete_all_roles(self):

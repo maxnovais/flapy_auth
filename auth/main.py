@@ -23,8 +23,8 @@ def create_app():
 
     def load_user(user_id):
         try:
-            from auth.action import UserAction
-            return UserAction().get_by_id(user_id)
+            from auth.models import User
+            return User.query.get(user_id)
         except ValueError:
             pass
 
