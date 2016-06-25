@@ -4,5 +4,5 @@ import os
 
 class BaseConfig(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    SECRET_KEY = 'itsasecret'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     DEBUG = False

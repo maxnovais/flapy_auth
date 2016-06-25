@@ -4,9 +4,10 @@ from flask_login import login_required, login_user, logout_user
 from flask_swagger import swagger
 from flask.json import jsonify
 
-from auth.exceptions import UserNotFound, InvalidCredentials
+from auth.exceptions import UserNotFound
 from auth.views import login_permission
 from auth.models import User
+
 
 blueprint = Blueprint('core', __name__, template_folder='templates', static_folder='static')
 

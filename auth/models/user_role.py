@@ -2,8 +2,7 @@
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from auth.models import Model, db, User, Role
-from auth.exceptions import RoleAlreadyEmpty, UserNotHasRole, UserAlreadyInRole
-
+from auth.exceptions import UserAlreadyInRole
 
 
 class UserRole(Model):

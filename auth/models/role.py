@@ -1,7 +1,7 @@
 # coding: utf-8
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound, RoleAlreadyEmpty
+from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound
 from auth.models import Model, db
 
 
