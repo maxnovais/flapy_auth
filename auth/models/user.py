@@ -80,14 +80,6 @@ class User(Model, UserMixin):
         if check_password_hash(self.password, password):
             return True
 
-    def toggle_status(self):
-        if self.active:
-            self.active = False
-        else:
-            self.active = True
-        self.save()
-        db.session.commit()
-
     @staticmethod
     def random_password(size=12):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(size))

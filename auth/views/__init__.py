@@ -1,6 +1,5 @@
 # coding: utf-8
 from flask_login import current_user
-from auth.action import RoleAction, UserRoleAction
 from auth.exceptions import RoleNotFound
 
 
