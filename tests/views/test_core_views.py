@@ -4,18 +4,6 @@ import pytest
 from flask import url_for
 
 
-@pytest.fixture
-def header():
-    return {'Content-Type': 'application/json; charset=UTF-8'}
-
-
-@pytest.fixture
-def login(user, header, client):
-    return client.post(url_for('core.login'),
-                       data=json.dumps({'username': 'Darth_Vader', 'password': '12345678'}),
-                       headers=header)
-
-
 def test_generate_swagger_spec(client):
     response = client.get(url_for('core.spec'))
     data = json.loads(response.data.decode('utf-8'))

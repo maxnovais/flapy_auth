@@ -195,3 +195,15 @@ def client(app):
     with app.test_client() as _client:
         yield _client
 
+
+@pytest.fixture
+def header():
+    return {'Content-Type': 'application/json; charset=UTF-8'}
+
+
+@pytest.fixture
+def login(user, header, client):
+    from flask import url_for, json
+    return client.post(url_for('core.login'),
+                       data=json.dumps({'username': 'Darth_Vader', 'password': '12345678'}),
+                       headers=header)
