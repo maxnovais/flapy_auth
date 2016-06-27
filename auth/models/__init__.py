@@ -26,7 +26,7 @@ class ModelMixin(object):
     def delete(self, commit=True):
         db.session.delete(self)
         if commit:
-            db.session.flush()
+            db.session.commit()
 
     def toggle_status(self):
         if self.active:

@@ -40,7 +40,7 @@ class Role(Model):
         """Edit existent role"""
         try:
             if name:
-                if len(name) < 3:
+                if not self.verify_role_name(name):
                     raise InvalidRoleName
                 self.name = name
             if description:
