@@ -28,6 +28,7 @@ class User(Model, UserMixin):
 
     @classmethod
     def by_login(cls, login):
+        """Search user by username or email"""
         if cls.verify_email(login):
             user = cls.query.filter(User.email == login).first()
         else:
@@ -63,6 +64,7 @@ class User(Model, UserMixin):
             raise UserAlreadyExist
 
     def change_password(self, old_password, password, confirm_password):
+        """Change password of user"""
         if not self.validate_password(old_password):
             raise InvalidCredentials
 
@@ -77,41 +79,49 @@ class User(Model, UserMixin):
         db.session.commit()
 
     def validate_password(self, password):
+        """Used for validate hash password"""
         if check_password_hash(self.password, password):
             return True
 
     @staticmethod
     def random_password(size=12):
+        """Create a string for password"""
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(size))
 
     @staticmethod
     def verify_email(email):
+        """Check if the email contains valid format"""
         if re.search(r'[\w.-]+@[\w.-]+.\w+', email):
             return True
 
     @staticmethod
     def verify_username(username):
+        """Check if the username does not contains invalid chars"""
         if re.search(r'^[a-zA-Z0-9_.-]+$', username):
             return True
 
     @classmethod
     def generate_password(cls, password=None):
+        """Create hash when password set or create a random password"""
         if not password:
             password = cls.random_password(12)
         return generate_password_hash(password)
 
     @property
     def roles(self):
+        """Return all roles of this user"""
         roles = []
         for user_role in self.user_roles:
             roles.append(user_role.role)
         return roles
 
     def has_role(self, role):
+        """Verify if this user have role"""
         if role in self.roles or role == self.roles:
             return True
 
     def delete_all_roles(self):
+        """Remove all roles of this user"""
         if not self.user_roles:
             raise UserNotHasRole
 

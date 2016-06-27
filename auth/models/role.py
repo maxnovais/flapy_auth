@@ -16,10 +16,12 @@ class Role(Model):
 
     @property
     def is_active(self):
+        """Return current status of role"""
         return self.active
 
     @classmethod
     def create(cls, name, description=None):
+        """Create new role"""
         if len(name) < 3:
             raise InvalidRoleName
 
@@ -34,6 +36,7 @@ class Role(Model):
             raise RoleAlreadyExist
 
     def edit(self, name=None, description=None):
+        """Edit existent role"""
         try:
             if name:
                 if len(name) < 3:
@@ -49,6 +52,7 @@ class Role(Model):
 
     @classmethod
     def search_role(cls, name, exactly=False):
+        """Search role by name, exactly or not"""
         if exactly:
             role = cls.query.filter(Role.name == name).all()
         else:
@@ -59,12 +63,14 @@ class Role(Model):
 
     @property
     def users(self):
+        """Return all users in this role"""
         users = []
         for role_user in self.role_users:
             users.append(role_user.user)
         return users
 
     def remove_all_users(self):
+        """Remove all users in this role"""
         for role_user in self.role_users:
             role_user.delete(commit=True)
         db.session.commit()

@@ -1,4 +1,5 @@
 # coding: utf-8
+"""The views of login, change password and common views are here"""
 from flask import Blueprint, request, current_app, render_template, abort
 from flask_login import login_required, login_user, logout_user, current_user
 from flask_swagger import swagger
@@ -45,8 +46,8 @@ def index():
 
 @blueprint.route('/login', methods=['POST'])
 def login():
-    """
-    Login
+    """Login
+
     **Authenticate user using json params.**
     ---
     tags:
@@ -114,8 +115,8 @@ def login():
 @blueprint.route('/home', methods=['GET'])
 @login_required
 def home():
-    """
-    Home
+    """Home
+
     **Authenticated home for all**
     ---
     tags:
@@ -136,8 +137,8 @@ def home():
 @blueprint.route('/user', methods=['GET'])
 @login_required
 def user_view():
-    """
-    User_view
+    """User_view
+
     **Authenticated home for usergroup**
     ---
     tags:
@@ -166,8 +167,8 @@ def user_view():
 @login_required
 @blueprint.route('/logout', methods=['GET'])
 def logout():
-    """
-    Logout
+    """Logout
+
     **Logout user**
     ---
     tags:
@@ -185,8 +186,8 @@ def logout():
 @blueprint.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
-    """
-    Change password
+    """Change password
+
     **Change user password using json params.**
     ---
     tags:

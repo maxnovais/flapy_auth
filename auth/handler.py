@@ -4,6 +4,7 @@ from flask.json import jsonify
 
 
 def error_handlers(app):
+    """Register in app all json views for errors"""
 
     @app.errorhandler(400)
     def bad_request(error):

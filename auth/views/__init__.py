@@ -5,6 +5,7 @@ from auth.exceptions import RoleNotFound
 
 
 def login_permission(permissions):
+    """Check if current_user has a permission to see"""
     user = User.query.get(current_user.get_id())
     for permission in permissions:
         try:

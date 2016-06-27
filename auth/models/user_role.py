@@ -20,6 +20,7 @@ class UserRole(Model):
 
     @staticmethod
     def set_role(user, role):
+        """Create a relationship of role and user"""
         try:
             user_role = UserRole()
             user_role.user_id = user.id

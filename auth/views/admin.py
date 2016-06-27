@@ -1,4 +1,5 @@
 # coding: utf-8
+"""The views of user administration are here"""
 from flask import Blueprint
 
 

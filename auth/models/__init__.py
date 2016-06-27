@@ -99,6 +99,6 @@ class Model(db.Model, ModelMixin):
     query_class = Query
 
 
-from auth.models.user import User #NOQA
-from auth.models.role import Role #NOQA
-from auth.models.user_role import UserRole #NOQA
+from auth.models.user import User # noqa
+from auth.models.role import Role # noqa
+from auth.models.user_role import UserRole # noqa

@@ -11,6 +11,7 @@ db = SQLAlchemy()
 
 
 def create_app():
+    """Factory app"""
     config_object = 'auth.config.{}.Config'.format(os.environ.get('AUTH_ENV') or 'local')
     app = Flask(__name__)
     app.config.from_object(config_object)
@@ -28,7 +29,7 @@ def create_app():
         except ValueError:
             pass
 
-    load_user = lm.user_loader(load_user)
+    lm.user_loader(load_user)
     error_handlers(app)
     register_blueprints(app)
     return app
