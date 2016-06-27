@@ -1,5 +1,6 @@
 # coding: utf-8
 from collections import OrderedDict
+from flask import request, abort
 from flask_login import current_user
 from datetime import datetime
 from auth.models import User, Role
@@ -13,20 +14,39 @@ def login_permission(permissions):
         try:
             role = Role.search_role(permission, True)
         except RoleNotFound:
-            return False
+            return abort(403)
         if user.has_role(role):
             return True
-    return False
+    return abort(403)
+
+
+def dict_object(query_object):
+    result = OrderedDict()
+    for key in query_object.__mapper__.c.keys():
+        result[key] = getattr(query_object, key)
+
+        if isinstance(result[key], datetime):
+            result[key] = getattr(query_object, key).strftime('%d/%m/%Y %H:%M:%S')
+    return result
 
 
 def dict_list(query):
     list = []
-    for object in query:
-        result = OrderedDict()
-        for key in object.__mapper__.c.keys():
-            result[key] = getattr(object, key)
-
-            if isinstance(result[key], datetime):
-                result[key] = getattr(object, key).strftime('%d/%m/%Y %H:%M:%S')
-        list.append(result)
+    for query_object in query:
+        list.append(dict_object(query_object))
     return list
+
+
+def query_object_list(model, paginable=True):
+    if paginable:
+        # Get Request Args from get /?limit=10&offset=0
+        limit = request.args.get('limit', 10, type=int)
+        offset = request.args.get('offset', 0,  type=int)
+    else:
+        limit = 10
+        offset = 0
+
+    query = model.query
+    count = query.fast_count()
+    data = dict_list(query.order_by(model.id.desc()).limit(limit).offset(offset).all())
+    return data, count

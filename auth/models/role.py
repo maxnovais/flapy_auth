@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from auth.exceptions import InvalidRoleName, RoleAlreadyExist, RoleNotFound
@@ -22,7 +23,7 @@ class Role(Model):
     @classmethod
     def create(cls, name, description=None):
         """Create new role"""
-        if len(name) < 3:
+        if not cls.verify_role_name(name):
             raise InvalidRoleName
 
         try:
@@ -60,6 +61,12 @@ class Role(Model):
         if not role:
             raise RoleNotFound
         return role
+
+    @staticmethod
+    def verify_role_name(role_name):
+        """Check length and if the username does not contains invalid chars"""
+        if len(role_name) >= 3 and re.search(r'^[a-zA-Z0-9_.-]+$', role_name):
+            return True
 
     @property
     def users(self):

@@ -96,8 +96,8 @@ class User(Model, UserMixin):
 
     @staticmethod
     def verify_username(username):
-        """Check if the username does not contains invalid chars"""
-        if re.search(r'^[a-zA-Z0-9_.-]+$', username):
+        """Check length and if the username does not contains invalid chars"""
+        if len(username) >= 3 and re.search(r'^[a-zA-Z0-9_.-]+$', username):
             return True
 
     @classmethod

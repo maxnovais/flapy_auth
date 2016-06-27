@@ -22,6 +22,10 @@ def error_handlers(app):
     def not_found(error):
         return make_response(jsonify({'error_code': 'not_found'}), 404)
 
+    @app.errorhandler(409)
+    def conflict(error):
+        return make_response(jsonify({'error_code': 'conflict'}), 409)
+
     @app.errorhandler(500)
     def server_error(error):
         return make_response(jsonify({'error_code': 'internal_error'}), 500)
