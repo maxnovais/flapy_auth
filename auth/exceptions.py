@@ -33,12 +33,14 @@ class UserNotFound(BaseException):
 class UserAlreadyExist(BaseException):
     pass
 
+
 class UserNotHasRole(BaseException):
     pass
 
 
 class UserAlreadyInRole(BaseException):
     pass
+
 
 class ValidationError(BaseException):
     pass
@@ -61,4 +63,8 @@ class InvalidRoleName(BaseException):
 
 
 class RoleNotFound(BaseException):
+    pass
+
+
+class UserRoleNotFound(BaseException):
     pass

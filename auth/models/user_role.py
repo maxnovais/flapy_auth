@@ -2,7 +2,7 @@
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from auth.models import Model, db, User, Role
-from auth.exceptions import UserAlreadyInRole
+from auth.exceptions import UserAlreadyInRole, UserRoleNotFound
 
 
 class UserRole(Model):
@@ -17,15 +17,23 @@ class UserRole(Model):
 
     __table_args__ = (db.UniqueConstraint('user_id', 'role_id', name='un_user_role'),)
 
-
-    @staticmethod
-    def set_role(user, role):
+    @classmethod
+    def set_role(cls, user, role):
         """Create a relationship of role and user"""
         try:
-            user_role = UserRole()
+            user_role = cls()
             user_role.user_id = user.id
             user_role.role_id = role.id
             user_role.save()
             db.session.commit()
         except IntegrityError:
             raise UserAlreadyInRole
+
+    @classmethod
+    def delete_role(cls, user, role):
+        user_role = cls.query.filter(cls.user == user, cls.role == role).first()
+        if not user_role:
+            raise UserRoleNotFound
+
+        db.session.delete(user_role)
+        db.session.commit()
