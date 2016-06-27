@@ -1,5 +1,7 @@
 # coding: utf-8
+from collections import OrderedDict
 from flask_login import current_user
+from datetime import datetime
 from auth.models import User, Role
 from auth.exceptions import RoleNotFound
 
@@ -15,3 +17,16 @@ def login_permission(permissions):
         if user.has_role(role):
             return True
     return False
+
+
+def dict_list(query):
+    list = []
+    for object in query:
+        result = OrderedDict()
+        for key in object.__mapper__.c.keys():
+            result[key] = getattr(object, key)
+
+            if isinstance(result[key], datetime):
+                result[key] = getattr(object, key).strftime('%d/%m/%Y %H:%M:%S')
+        list.append(result)
+    return list

@@ -207,3 +207,8 @@ def login(user, header, client):
     return client.post(url_for('core.login'),
                        data=json.dumps({'username': 'Darth_Vader', 'password': '12345678'}),
                        headers=header)
+
+
+@pytest.fixture()
+def admin_login(login, role, admin_role):
+    return login

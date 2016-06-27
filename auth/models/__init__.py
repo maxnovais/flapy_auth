@@ -41,18 +41,6 @@ class ModelMixin(object):
         if commit:
             db.session.flush()
 
-    def _asdict(self):
-        """This method is called by JSON dumps
-        """
-        result = OrderedDict()
-        for key in self.__mapper__.c.keys():
-            result[key] = getattr(self, key)
-
-            if isinstance(result[key], datetime.datetime):
-                result[key] = getattr(self, key).strftime('%d/%m/%Y %H:%M:%S')
-
-        return result
-
     def __repr__(self):
         field = value = None
         for f in ('name', 'username', 'created', 'uuid'):
