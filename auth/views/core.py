@@ -1,10 +1,10 @@
 # coding: utf-8
 from flask import Blueprint, request, current_app, render_template, abort
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 from flask_swagger import swagger
 from flask.json import jsonify
 
-from auth.exceptions import UserNotFound
+from auth.exceptions import UserNotFound, InvalidPassword, InvalidCredentials, PasswordMismatch
 from auth.views import login_permission
 from auth.models import User
 
@@ -91,11 +91,12 @@ def login():
         schema:
           $ref: "#/definitions/generic_error"
     """
-    username = request.json.get('username')
-    password = request.json.get('password')
-    remember = request.json.get('remember')
-
-    if not username or not password:
+    required_fields = ('username', 'password')
+    if all(request.json.get(field) for field in required_fields):
+        username = request.json.get('username')
+        password = request.json.get('password')
+        remember = request.json.get('remember')
+    else:
         return abort(400)
 
     try:
@@ -184,4 +185,61 @@ def logout():
 @blueprint.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
-    pass
+    """
+    Change password
+    **Change user password using json params.**
+    ---
+    tags:
+      - Core
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: change_password_form
+          required:
+            - old_password
+            - password
+            - confirm_password
+          properties:
+            old_password:
+              type: string
+            password:
+              type: string
+            confirm_password:
+              type: string
+    responses:
+      200:
+        description: Change with success
+        schema:
+          id: generic_success
+          properties:
+            message:
+              type: string
+      400:
+        description: Invalid json informations
+        schema:
+          $ref: "#/definitions/generic_error"
+      401:
+        description: Invalid credentials
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
+    required_fields = ('old_password', 'password', 'confirm_password')
+    if all(request.json.get(field) for field in required_fields):
+        old_password = request.json.get('old_password')
+        password = request.json.get('password')
+        confirm_password = request.json.get('confirm_password')
+    else:
+        return abort(400)
+
+    try:
+        user = User.by_login(current_user.username)
+        user.change_password(old_password=old_password, password=password, confirm_password=confirm_password)
+        return jsonify({'message': 'success'}), 200
+
+    except (InvalidPassword, PasswordMismatch):
+        return abort(400)
+
+    except InvalidCredentials:
+        return abort(401)

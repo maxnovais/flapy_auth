@@ -31,7 +31,7 @@ def test_change_user_password_with_success(user):
 
 
 @pytest.mark.parametrize('exception, old_password, password, confirm_password', [
-    (InvalidPassword, 'password_error', '12345678', '12345678'),
+    (InvalidCredentials, 'password_error', '12345678', '12345678'),
     (InvalidPassword, '12345678', '', ''),
     (PasswordMismatch, '12345678', '1234567890', '0987654321'),
 ])

@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from auth.exceptions import (InvalidPassword, InvalidUsername, InvalidEmail, PasswordMismatch, UserAlreadyExist,
-                             UserNotFound, UserNotHasRole)
+                             UserNotFound, UserNotHasRole, InvalidCredentials)
 from auth.models import Model, db
 
 
@@ -64,7 +64,7 @@ class User(Model, UserMixin):
 
     def change_password(self, old_password, password, confirm_password):
         if not self.validate_password(old_password):
-            raise InvalidPassword
+            raise InvalidCredentials
 
         if len(password) < 6:
             raise InvalidPassword
