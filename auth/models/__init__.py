@@ -1,22 +1,9 @@
 # coding: utf-8
-from collections import OrderedDict
-import datetime
-
 from flask_sqlalchemy import models_committed, BaseQuery
 from sqlalchemy import func
 
-from auth.exceptions import ValidationError, SessionNotFound
+from auth.exceptions import SessionNotFound
 from auth.main import db
-
-
-@models_committed.connect
-def models_committed_handler(sender, **kwrags):
-    """
-    Mark the instance as _new = True for just created object otherwise as False
-    """
-    for obj, action in kwrags['changes']:
-        if action == 'insert':
-            obj._new = True
 
 
 class ModelMixin(object):
@@ -41,6 +28,14 @@ class ModelMixin(object):
         if commit:
             db.session.flush()
 
+    def toggle_status(self):
+        if self.active:
+            self.active = False
+        else:
+            self.active = True
+        self.save()
+        db.session.commit()
+
     def __repr__(self):
         field = value = None
         for f in ('name', 'username', 'created', 'uuid'):
@@ -54,14 +49,6 @@ class ModelMixin(object):
         else:
             return "<{name}[{id!r}]>".format(
                 name=self.__class__.__name__, id=self.id)
-
-    def toggle_status(self):
-        if self.active:
-            self.active = False
-        else:
-            self.active = True
-        self.save()
-        db.session.commit()
 
 
 class Query(BaseQuery):
