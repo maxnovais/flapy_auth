@@ -41,16 +41,6 @@ class ModelMixin(object):
         if commit:
             db.session.flush()
 
-    def patch(self, data):
-        for key, value in data.iteritems():
-            if self.patchable and key not in self.patchable:
-                raise ValidationError('One of the keys is an immutable property: %s' % key)
-            if self.unpatchable and key in self.unpatchable:
-                raise ValidationError('One of the keys is an immutable property: %s' % key)
-            setattr(self, key, value)
-
-        db.session.add(self)
-
     def _asdict(self):
         """This method is called by JSON dumps
         """
