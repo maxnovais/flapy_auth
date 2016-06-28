@@ -43,7 +43,7 @@ def test_invalidate_and_validate_role(role):
 
 def test_search_role_with_name(role):
     role = Role.search_role(name='admin', exactly=True)
-    assert role[0].description == 'Administrator'
+    assert role.description == 'Administrator'
 
 
 def test_search_role_with_part_of_name(role):

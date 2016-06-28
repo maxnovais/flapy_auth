@@ -1,5 +1,6 @@
 # coding: utf-8
 from collections import OrderedDict
+from functools import wraps
 from flask import request, abort
 from flask_login import current_user
 from datetime import datetime
@@ -7,17 +8,21 @@ from auth.models import User, Role
 from auth.exceptions import RoleNotFound
 
 
-def login_permission(permissions):
+def login_permission(permission):
     """Check if current_user has a permission to see"""
-    user = User.query.get(current_user.get_id())
-    for permission in permissions:
-        try:
-            role = Role.search_role(permission, True)
-        except RoleNotFound:
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            user = User.query.get(current_user.get_id())
+            try:
+                role = Role.search_role(permission, True)
+                if user.has_role(role):
+                    return function(*args, **kwargs)
+            except RoleNotFound:
+                return abort(403)
             return abort(403)
-        if user.has_role(role):
-            return True
-    return abort(403)
+        return wrapper
+    return decorator
 
 
 def dict_object(query_object):

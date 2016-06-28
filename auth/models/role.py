@@ -55,7 +55,7 @@ class Role(Model):
     def search_role(cls, name, exactly=False):
         """Search role by name, exactly or not"""
         if exactly:
-            role = cls.query.filter(Role.name == name).all()
+            role = cls.query.filter(Role.name == name).first()
         else:
             role = cls.query.filter(Role.name.contains(name)).all()
         if not role:

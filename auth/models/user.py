@@ -117,7 +117,7 @@ class User(Model, UserMixin):
 
     def has_role(self, role):
         """Verify if this user have role"""
-        if role in self.roles or role == self.roles:
+        if role in self.roles:
             return True
 
     def delete_all_roles(self):
