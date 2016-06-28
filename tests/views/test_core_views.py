@@ -50,23 +50,19 @@ def test_login_user_without_success(app, user, header, client, status_code, mess
     assert response.status_code == status_code
 
 
-def test_change_password_with_success(app, user, login, header, client):
+def test_change_password_with_success(user, login, header, client):
     from flask_login import current_user
     new_password = '87654321'
-    response = client.post(url_for('core.change_password'),
-                           data=json.dumps({
-                               'old_password': '12345678',
-                               'password': new_password,
-                               'confirm_password': new_password
-                           }),
-                           headers=header)
+    response = client.post(
+        url_for('core.change_password'),
+        data=json.dumps({'old_password': '12345678', 'password': new_password, 'confirm_password': new_password}),
+        headers=header)
     data = json.loads(response.data.decode('utf-8'))
     assert data['message'] == 'success'
     client.get(url_for('core.logout'))
     assert current_user.is_authenticated is False
-    response = client.post(url_for('core.login'),
-                           data=json.dumps({'username': user.username, 'password': new_password}),
-                           headers=header)
+    response = client.post(
+        url_for('core.login'), data=json.dumps({'username': user.username, 'password': new_password}), headers=header)
     data = json.loads(response.data.decode('utf-8'))
     assert data['message'] == 'success'
     assert response.status_code == 200
@@ -76,9 +72,8 @@ def test_change_password_with_success(app, user, login, header, client):
     (400, 'bad_request', '', '', ''),
     (400, 'bad_request', '12345678', '123', '123'),
     (400, 'bad_request', '12345678', '123456', '12345678'),
-    (401, 'not_authorized', 'Darth_Vader', '87654321', '87654321'),
-])
-def test_change_password_without_success(app, user, header, client, login, status_code, message, old_password,
+    (401, 'not_authorized', 'Darth_Vader', '87654321', '87654321'),])
+def test_change_password_without_success(user, header, client, login, status_code, message, old_password,
                                          password, confirm_password):
     response = client.post(url_for('core.change_password'),
                            data=json.dumps({
@@ -90,7 +85,6 @@ def test_change_password_without_success(app, user, header, client, login, statu
     data = json.loads(response.data.decode('utf-8'))
     assert data['error_code'] == message
     assert response.status_code == status_code
-
 
 
 def test_access_a_blocked_page_with_login(login, user, client):

@@ -111,6 +111,7 @@ def delete_user_roles(user_id):
         user.delete_all_roles()
         user.refresh()
         data = {'user': dict_object(user)}
+        data['user']['roles'] = dict_list(user.roles)
         return jsonify(data), 202
     except UserNotHasRole:
         abort(404)
@@ -127,7 +128,8 @@ def set_user_role(user_id, role_id):
     try:
         UserRole.set_role(user, role)
         user.refresh()
-        data = {'roles': dict_list(user.roles)}
+        data = {'user': dict_object(user)}
+        data['user']['roles'] = dict_list(user.roles)
         return jsonify(data), 201
     except UserAlreadyInRole:
         abort(409)
@@ -144,7 +146,8 @@ def delete_user_role(user_id, role_id):
     try:
         UserRole.delete_role(user, role)
         user.refresh()
-        data = {'roles': dict_list(user.roles)}
+        data = {'user': dict_object(user)}
+        data['user']['roles'] = dict_list(user.roles)
         return jsonify(data), 202
     except UserRoleNotFound:
         abort(409)
@@ -164,11 +167,10 @@ def roles():
 @blueprint.route('/roles', methods=['POST'])
 def create_role():
     """ Create new user """
-    required_fields = ('name')
-    if all(request.json.get(field) for field in required_fields):
-        name = request.json.get('name')
-        description = request.json.get('description')
-    else:
+    name = request.json.get('name')
+    description = request.json.get('description')
+
+    if not name:
         return abort(400)
 
     try:
@@ -198,12 +200,11 @@ def show_role(role_id):
 @blueprint.route('/roles/<role_id>', methods=['POST'])
 def edit_role(role_id):
     """ Show user """
-    required_fields = ('name')
-    if all(request.json.get(field) for field in required_fields):
-        name = request.json.get('name')
-        description = request.json.get('description')
-    else:
-        abort(400)
+    name = request.json.get('name')
+    description = request.json.get('description')
+
+    if not name:
+        return abort(400)
 
     role = Role.query.get(role_id)
     if not role:
