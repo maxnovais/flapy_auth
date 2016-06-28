@@ -177,7 +177,7 @@ def test_should_return_a_single_role_in_base(client, admin_login, role):
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize('view', ['admin.show_role'])
+@pytest.mark.parametrize('view', ['admin.show_role', 'admin.show_role_users'])
 def test_do_not_return_inexistent_role_for_get_views(client, admin_login, view):
     response = client.get(url_for(view, role_id=100))
     data = json.loads(response.data.decode('utf-8'))
@@ -237,3 +237,11 @@ def test_remove_all_users_of_role_with_success(client, admin_login, user, role_u
     response = client.delete(url_for('admin.remove_all_users', role_id=role_user.id))
     data = json.loads(response.data.decode('utf-8'))
     assert data['role']['users'] == []
+    assert response.status_code == 202
+
+
+def test_should_return_all_users_in_this_role(client, admin_login, user, role, other_user, other_user_in_role):
+    response = client.get(url_for('admin.show_role_users', role_id=role.id))
+    data = json.loads(response.data.decode('utf-8'))
+    assert data['users'][0]['username'] == 'Darth_Vader'
+    assert response.status_code == 200
