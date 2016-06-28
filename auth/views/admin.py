@@ -12,28 +12,103 @@ blueprint = Blueprint('admin', __name__, template_folder='templates', static_fol
 
 
 @blueprint.route('/', methods=['GET'])
-@login_required
 def home():
-    """Admin home"""
-    login_permission([blueprint.name])
+    """Admin home
 
+    Show last updates in user administration
+    ---
+    tags:
+      - User
+      - Role
+    definitions:
+      - schema:
+          id: Role
+          properties:
+            active:
+              type: boolean
+            created_at:
+              type: string
+            description:
+              type: string
+            id:
+              type: number
+            name:
+              type: string
+      - schema:
+          id: User
+          properties:
+            active:
+              type: boolean
+            created_at:
+              type: string
+            current_login_at:
+              type: string
+            email:
+              type: string
+            id:
+              type: number
+            last_login_at:
+              type: string
+            login_count:
+              type: number
+            password:
+              type: string
+            username:
+              type: string
+    responses:
+      200:
+        description: Last updates
+        schema:
+          id: last_updates
+          properties:
+            latest:
+              properties:
+                roles:
+                  type: array
+                  items:
+                    $ref: "#/definitions/Role"
+                users:
+                  type: array
+                  items:
+                    $ref: "#/definitions/User"
+            total:
+              properties:
+                roles:
+                  type: number
+                users:
+                  type: number
+    """
     users, total_users = query_object_list(User, paginable=False)
     roles, total_roles = query_object_list(Role, paginable=False)
 
     data = {
         'latest': {'users': users, 'roles': roles},
-        'totals': {'users': total_users, 'roles': total_roles}
+        'total': {'users': total_users, 'roles': total_roles}
     }
 
     return jsonify(data), 200
 
 
 @blueprint.route('/users', methods=['GET'])
-# @login_required
 def users():
-    """ Get Users """
-    login_permission([blueprint.name])
+    """ Get Users
 
+    Show all users in base
+    ---
+    tags:
+      - User
+    responses:
+      200:
+        description: All users
+        schema:
+          id: all_users
+          properties:
+            users:
+              schema:
+                $ref: "#/definitions/User"
+            total:
+              type: number
+    """
     values, total = query_object_list(User)
     data = {'users': values, 'total': total}
     return jsonify(data), 200
@@ -41,7 +116,54 @@ def users():
 
 @blueprint.route('/users', methods=['POST'])
 def create_user():
-    """ Create new user """
+    """ Create User
+
+    Create a new user
+    ---
+    tags:
+      - User
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: create_edit_user_form
+          required:
+            - username
+            - email
+            - password
+            - confirm_password
+          properties:
+            username:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+            confirm_password:
+              type: string
+    responses:
+      201:
+        description: Created User
+        schema:
+          id: create_edit_user
+          properties:
+            user:
+              schema:
+                $ref: "#/definitions/User"
+      400:
+        description: Invalid json informations
+        schema:
+          $ref: "#/definitions/generic_error"
+      401:
+        description: Invalid credentials
+        schema:
+          $ref: "#/definitions/generic_error"
+      409:
+        description: Conflict
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     required_fields = ('username', 'email', 'password', 'confirm_password')
     if all(request.json.get(field) for field in required_fields):
         username = request.json.get('username')
@@ -65,7 +187,54 @@ def create_user():
 
 @blueprint.route('/users/<user_id>', methods=['GET'])
 def show_user(user_id):
-    """ Show user """
+    """ Show User
+
+    Show a single user
+    ---
+    tags:
+      - User
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        decription: show user
+        schema:
+          id: show_user
+          properties:
+            user:
+              schema:
+                id: User_with_roles
+                properties:
+                  active:
+                    type: boolean
+                  created_at:
+                    type: string
+                  current_login_at:
+                    type: string
+                  email:
+                    type: string
+                  id:
+                    type: number
+                  last_login_at:
+                    type: string
+                  login_count:
+                    type: number
+                  password:
+                    type: string
+                  username:
+                    type: string
+                  roles:
+                    type: array
+                    items:
+                      $ref: "#/definitions/Role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     if not user:
         abort(404)
@@ -77,7 +246,28 @@ def show_user(user_id):
 
 @blueprint.route('/users/<user_id>/status', methods=['POST'])
 def toogle_user_status(user_id):
-    """ Show user """
+    """ Toogle User Status
+
+    Change user status **active** = `true` or `false`
+    ---
+    tags:
+      - User
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+        required: true
+    responses:
+      202:
+        decription: Create User
+        schema:
+          $ref: "#/definitions/User_with_roles"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     if not user:
         abort(404)
@@ -86,12 +276,39 @@ def toogle_user_status(user_id):
     user.refresh()
 
     data = {'user': dict_object(user)}
+    data['user']['roles'] = dict_list(user.roles)
     return jsonify(data), 202
 
 
 @blueprint.route('/users/<user_id>/roles', methods=['GET'])
 def show_user_roles(user_id):
-    """ Show user """
+    """ Show User Roles
+
+    Show all roles of a single user
+    ---
+    tags:
+      - User
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+        required: true
+    responses:
+      200:
+        description: Create User
+        schema:
+          id: user_roles
+          properties:
+            roles:
+              type: array
+              items:
+                $ref: "#/definitions/Role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     if not user:
         abort(404)
@@ -102,7 +319,28 @@ def show_user_roles(user_id):
 
 @blueprint.route('/users/<user_id>/roles', methods=['DELETE'])
 def delete_user_roles(user_id):
-    """ Show user """
+    """ Remove All User's Role
+
+    Remove all roles of a user
+    ---
+    tags:
+      - User
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+        required: true
+    responses:
+      202:
+        decription: Create User
+        schema:
+          $ref: "#/definitions/User_with_role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     if not user:
         abort(404)
@@ -119,7 +357,35 @@ def delete_user_roles(user_id):
 
 @blueprint.route('/users/<user_id>/roles/<role_id>', methods=['POST'])
 def set_user_role(user_id, role_id):
-    """ Show user """
+    """ Set User Role
+
+    Set a role to user
+    ---
+    tags:
+      - Permissions
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      201:
+        description: Create User
+        schema:
+          $ref: "#/definitions/User_with_role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+      409:
+        description: Conflict
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     role = Role.query.get(role_id)
     if not user or not role:
@@ -137,7 +403,35 @@ def set_user_role(user_id, role_id):
 
 @blueprint.route('/users/<user_id>/roles/<role_id>', methods=['DELETE'])
 def delete_user_role(user_id, role_id):
-    """ Show user """
+    """ Delete User Role
+
+    Delete one role of user
+    ---
+    tags:
+      - Permissions
+    parameters:
+      - name: user_id
+        in: path
+        type: string
+        required: true
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      201:
+        description: Create User
+        schema:
+          $ref: "#/definitions/User_with_role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+      409:
+        description: Conflict
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     user = User.query.get(user_id)
     role = Role.query.get(role_id)
     if not user or not role:
@@ -156,7 +450,24 @@ def delete_user_role(user_id, role_id):
 @blueprint.route('/roles', methods=['GET'])
 # @login_required
 def roles():
-    """Get Roles"""
+    """ Get Roles
+
+    Show all roles in base
+    ---
+    tags:
+      - Role
+    responses:
+      200:
+        description: All roles
+        schema:
+          id: all_roles
+          properties:
+            roles:
+              schema:
+                $ref: "#/definitions/Role"
+            total:
+              type: number
+    """
     login_permission([blueprint.name])
 
     values, total = query_object_list(Role)
@@ -166,7 +477,47 @@ def roles():
 
 @blueprint.route('/roles', methods=['POST'])
 def create_role():
-    """ Create new user """
+    """ Create Role
+
+     Create a new role
+     ---
+     tags:
+       - Role
+     parameters:
+       - in: body
+         name: body
+         required: true
+         schema:
+           id: create_edit_role_form
+           required:
+             - name
+           properties:
+             name:
+               type: string
+             description:
+               type: string
+     responses:
+       201:
+         description: Created Role
+         schema:
+           id: create_edit_role
+           properties:
+             role:
+               schema:
+                 $ref: "#/definitions/Role"
+       400:
+         description: Invalid json informations
+         schema:
+           $ref: "#/definitions/generic_error"
+       401:
+         description: Invalid credentials
+         schema:
+           $ref: "#/definitions/generic_error"
+       409:
+         description: Conflict
+         schema:
+           $ref: "#/definitions/generic_error"
+     """
     name = request.json.get('name')
     description = request.json.get('description')
 
@@ -187,7 +538,46 @@ def create_role():
 
 @blueprint.route('/roles/<role_id>', methods=['GET'])
 def show_role(role_id):
-    """ Show user """
+    """ Show Role
+
+    Show a single role
+    ---
+    tags:
+      - Role
+    parameters:
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        decription: show_role
+        schema:
+          id: show_role
+          properties:
+            user:
+              schema:
+                id: Role_with_users
+                properties:
+                  active:
+                    type: boolean
+                  created_at:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  id:
+                    type: number
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/definitions/User"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     role = Role.query.get(role_id)
     if not role:
         abort(404)
@@ -197,9 +587,78 @@ def show_role(role_id):
     return jsonify(data), 200
 
 
+@blueprint.route('/roles/<role_id>/users', methods=['GET'])
+def show_role_users(role_id):
+    """ Show Role's Users
+
+    Show all users in role
+    ---
+    tags:
+      - Role
+    parameters:
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        decription: show_role
+        schema:
+          id: show_role
+          properties:
+            users:
+              type: array
+              items:
+                $ref: "#/definitions/User"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
+    role = Role.query.get(role_id)
+    if not role:
+        abort(404)
+
+    data = {'users': dict_list(role.users)}
+    return jsonify(data), 200
+
+
 @blueprint.route('/roles/<role_id>', methods=['POST'])
 def edit_role(role_id):
-    """ Show user """
+    """ Edit Role
+
+     Edit a role
+     ---
+     tags:
+       - Role
+     parameters:
+       - name: role_id
+         in: path
+         type: string
+         required: true
+       - in: body
+         name: body
+         required: true
+         schema:
+           $ref: "#/definitions/create_edit_role_form"
+     responses:
+       202:
+         description: Created Role
+         schema:
+           $ref: "#/definitions/create_edit_role"
+       400:
+         description: Invalid json informations
+         schema:
+           $ref: "#/definitions/generic_error"
+       401:
+         description: Invalid credentials
+         schema:
+           $ref: "#/definitions/generic_error"
+       409:
+         description: Conflict
+         schema:
+           $ref: "#/definitions/generic_error"
+     """
     name = request.json.get('name')
     description = request.json.get('description')
 
@@ -225,7 +684,23 @@ def edit_role(role_id):
 
 @blueprint.route('/roles/<role_id>', methods=['DELETE'])
 def delete_role(role_id):
-    """ Show user """
+    """ Delete Role
+
+    Show all roles in base
+    ---
+    tags:
+      - Role
+    parameters:
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: All roles
+        schema:
+          $ref: "#/definitions/all_role"
+    """
     role = Role.query.get(role_id)
     if not role:
         abort(404)
@@ -238,9 +713,29 @@ def delete_role(role_id):
     return jsonify(data), 202
 
 
-@blueprint.route('/roles/<role_id>/remove', methods=['DELETE'])
+@blueprint.route('/roles/<role_id>/users', methods=['DELETE'])
 def remove_all_users(role_id):
-    """ Show user """
+    """ Remove All Role's User
+
+    Remove all users of a role
+    ---
+    tags:
+      - Role
+    parameters:
+      - name: role_id
+        in: path
+        type: string
+        required: true
+    responses:
+      202:
+        description: Created Role
+        schema:
+          $ref: "#/definitions/create_edit_role"
+      404:
+        description: Not Found
+        schema:
+          $ref: "#/definitions/generic_error"
+    """
     role = Role.query.get(role_id)
     if not role:
         abort(404)
