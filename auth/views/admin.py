@@ -12,6 +12,8 @@ blueprint = Blueprint('admin', __name__, template_folder='templates', static_fol
 
 
 @blueprint.route('/', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def home():
     """Admin home
 
@@ -90,6 +92,8 @@ def home():
 
 
 @blueprint.route('/users', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def users():
     """ Get Users
 
@@ -115,6 +119,8 @@ def users():
 
 
 @blueprint.route('/users', methods=['POST'])
+@login_required
+@login_permission(blueprint.name)
 def create_user():
     """ Create User
 
@@ -186,6 +192,8 @@ def create_user():
 
 
 @blueprint.route('/users/<user_id>', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def show_user(user_id):
     """ Show User
 
@@ -245,6 +253,8 @@ def show_user(user_id):
 
 
 @blueprint.route('/users/<user_id>/status', methods=['POST'])
+@login_required
+@login_permission(blueprint.name)
 def toogle_user_status(user_id):
     """ Toogle User Status
 
@@ -281,6 +291,8 @@ def toogle_user_status(user_id):
 
 
 @blueprint.route('/users/<user_id>/roles', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def show_user_roles(user_id):
     """ Show User Roles
 
@@ -318,6 +330,8 @@ def show_user_roles(user_id):
 
 
 @blueprint.route('/users/<user_id>/roles', methods=['DELETE'])
+@login_required
+@login_permission(blueprint.name)
 def delete_user_roles(user_id):
     """ Remove All User's Role
 
@@ -356,6 +370,8 @@ def delete_user_roles(user_id):
 
 
 @blueprint.route('/users/<user_id>/roles/<role_id>', methods=['POST'])
+@login_required
+@login_permission(blueprint.name)
 def set_user_role(user_id, role_id):
     """ Set User Role
 
@@ -402,6 +418,8 @@ def set_user_role(user_id, role_id):
 
 
 @blueprint.route('/users/<user_id>/roles/<role_id>', methods=['DELETE'])
+@login_required
+@login_permission(blueprint.name)
 def delete_user_role(user_id, role_id):
     """ Delete User Role
 
@@ -448,7 +466,8 @@ def delete_user_role(user_id, role_id):
 
 
 @blueprint.route('/roles', methods=['GET'])
-# @login_required
+@login_required
+@login_permission(blueprint.name)
 def roles():
     """ Get Roles
 
@@ -476,6 +495,8 @@ def roles():
 
 
 @blueprint.route('/roles', methods=['POST'])
+@login_required
+@login_permission(blueprint.name)
 def create_role():
     """ Create Role
 
@@ -537,6 +558,8 @@ def create_role():
 
 
 @blueprint.route('/roles/<role_id>', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def show_role(role_id):
     """ Show Role
 
@@ -588,6 +611,8 @@ def show_role(role_id):
 
 
 @blueprint.route('/roles/<role_id>/users', methods=['GET'])
+@login_required
+@login_permission(blueprint.name)
 def show_role_users(role_id):
     """ Show Role's Users
 
@@ -624,6 +649,8 @@ def show_role_users(role_id):
 
 
 @blueprint.route('/roles/<role_id>', methods=['POST'])
+@login_required
+@login_permission(blueprint.name)
 def edit_role(role_id):
     """ Edit Role
 
@@ -683,6 +710,8 @@ def edit_role(role_id):
 
 
 @blueprint.route('/roles/<role_id>', methods=['DELETE'])
+@login_required
+@login_permission(blueprint.name)
 def delete_role(role_id):
     """ Delete Role
 
@@ -714,6 +743,8 @@ def delete_role(role_id):
 
 
 @blueprint.route('/roles/<role_id>/users', methods=['DELETE'])
+@login_required
+@login_permission(blueprint.name)
 def remove_all_users(role_id):
     """ Remove All Role's User
 

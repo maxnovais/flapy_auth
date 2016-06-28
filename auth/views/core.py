@@ -136,6 +136,7 @@ def home():
 
 @blueprint.route('/user', methods=['GET'])
 @login_required
+@login_permission('user')
 def user_view():
     """User_view
 
@@ -157,10 +158,6 @@ def user_view():
         schema:
           $ref: "#/definitions/generic_error"
     """
-    permissions = ['user']
-    if not login_permission(permissions):
-        return abort(403)
-
     return jsonify({'message': 'I\'m user with success!'}), 200
 
 
